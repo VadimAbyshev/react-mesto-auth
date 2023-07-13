@@ -1,0 +1,15 @@
+.element__bucket-button{
+    background-image: url(../../../images/element__bucket.svg);
+    width: 18px;
+    height: 19px;
+    border: none;
+    position: absolute;
+    background-color: transparent;
+    top:20px;
+    right: 20px;
+    
+}
+
+.element__bucket-button:hover{
+    opacity: 0.6;
+}

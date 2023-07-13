@@ -1,0 +1,11 @@
+.spinner {
+    background-image: url(../../images/Bean\ Eater-0.3s-200px.gif);
+    background-repeat: no-repeat;
+    width: 150px;
+    height: 150px;
+    background-size: cover;
+    background-position: center;
+    align-self: start;
+    justify-content: center;
+    
+}

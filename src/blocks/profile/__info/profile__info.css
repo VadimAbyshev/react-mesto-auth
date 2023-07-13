@@ -1,0 +1,32 @@
+.profile__info{
+    display: grid;
+    flex-wrap: wrap;
+    padding-left: 30px;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    grid-row-gap: 16px;
+    max-width: 336px;
+    grid-column-gap: 18px;
+    grid-template-areas: "profile__name  profile__button-edit"
+                    "profile__description  profile__description";
+                    
+
+}
+
+@media  screen and (max-width: 813px) {
+    .profile__info{
+       padding-right: 50px;
+    }
+}
+@media  screen and (max-width: 670px) {
+    .profile__info {
+        grid-column-gap: 10px;
+        padding-left: 0;
+        padding-right: 0;
+        align-items:center;
+        grid-row-gap: 8px;
+        text-align: center;
+        padding-top: 26px;
+        padding-bottom: 33px;
+    }
+}

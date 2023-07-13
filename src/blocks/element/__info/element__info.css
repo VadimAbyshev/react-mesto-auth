@@ -1,0 +1,13 @@
+.element__info{
+    display: flex;
+    align-self: center;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 25px;
+    padding-bottom: 21px;
+    width: 246px;
+    margin: 0 auto 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

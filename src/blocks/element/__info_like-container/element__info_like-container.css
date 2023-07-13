@@ -1,0 +1,5 @@
+.element__info_like-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

@@ -1,0 +1,22 @@
+.popup__error-span{
+        font-family: 'Inter';
+        font-style: normal;
+        color: red;
+        margin-top: 5px;
+        padding: 0;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 15px;
+        width: 358px;
+        height: 30px;
+}
+
+.popup__error-span:last-of-type{
+    margin-bottom: 0;
+}
+
+@media screen and (max-width: 670px){
+.popup__error-span {
+    width: 238px;
+}
+}

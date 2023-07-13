@@ -1,0 +1,16 @@
+.popup__input-form{
+    display: flex;
+    align-self: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+.popup__input-form:first-of-type{
+    margin-bottom: 0;
+}
+
+@media screen and (max-width: 670px){
+    .popup__input-form{
+        margin-bottom: 0;
+    }
+    }

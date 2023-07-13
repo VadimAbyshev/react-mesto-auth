@@ -1,0 +1,4 @@
+.decoration{
+    transition: opacity 1s ease-out;
+    cursor: pointer;
+}
