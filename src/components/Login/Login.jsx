@@ -47,7 +47,7 @@ export default function Login({onLogin, name,isLoadingSend}) {
             required
             onChange={handlePasswordChange}
           ></input>
-
+          <span className="popup__error-span"></span>
           <button className="login__form-submit-button decoration" type="submit">
           {isLoadingSend ? 'Войти' +'...' : 'Войти'}
           </button>

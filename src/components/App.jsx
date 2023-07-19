@@ -241,7 +241,10 @@ useEffect(() => {
           navigate('/');
       })
       .catch(error => {
+        setInfoTooltipPopupOpen(true);
+        setInfoTooltipSuccess(false);
         console.error(`Ошибка авторизации ${error}`);
+        
       })
       .finally(() => setLoadingSend(false));
   }

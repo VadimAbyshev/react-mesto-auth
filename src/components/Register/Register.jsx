@@ -48,7 +48,6 @@ export default function Register({onRegister, name, isLoadingSend}) {
             required
             onChange={handlePasswordChange}
           ></input>
-
           <button className="login__form-submit-button decoration" type="submit">
             
 
