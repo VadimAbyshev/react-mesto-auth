@@ -1,6 +1,6 @@
 import Header from "./Header/Header.jsx";
-import Main from "./Main/Main.jsx";
-import Footer from "./Footer/Footer.jsx";
+// import Main from "./Main/Main.jsx";
+// import Footer from "./Footer/Footer.jsx";
 import PopupWithForm from "./PopupWithForm/PopupWithForm.jsx";
 import ImagePopup from "./ImagePopup/ImagePopup.jsx"
 import { useCallback, useEffect, useState } from "react";
@@ -9,8 +9,20 @@ import api from "../utils/Api.js";
 import EditProfilePopup from "./EditProfilePopup/EditProfilePopup.jsx";
 import EditAvatarPopup from "./EditAvatarPopup/EditAvatarPopup.jsx";
 import AddPlacePopup from "./AddPlacePopup/AddPlacePopup.jsx";
+import Register from "./Register/Register.jsx";
+import InfoToolTip from "./InfoTooltip/InfoTooltip.jsx";
+import Login from "./Login/Login.jsx";
+
+import {regUser, loginUser, checkTokens} from "../utils/Auth.js"
+import {  Route, Routes, useNavigate } from 'react-router-dom'
+import ProtectedRoute from "./ProtectedRoute/ProtectedRoute.jsx";
+
 
 function App() { 
+
+  const navigate = useNavigate()
+
+
 //state Popup
 
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false)
@@ -20,6 +32,9 @@ function App() {
   const [isImagePopup, setImagePopup] = useState(false)
   const [isDeletePlacePopup, setDeletePlacePopup] = useState(false)
   const [isLoadingSend, setLoadingSend] = useState(false)
+
+  const [isInfoTooltipPopupOpen, setInfoTooltipPopupOpen] = useState(false)
+  const [isInfoTooltipSuccess, setInfoTooltipSuccess] = useState(false)
  
  //state Context
   const [currentUser, setCurrentUser] = useState({})
@@ -30,7 +45,7 @@ function App() {
   const[isLoadingCard, setLoadingCard] = useState(true)
   const[deleteCardId, setDeleteCardId] = useState('')
 
-
+const[dataUser, setDataUser] = useState('')
 
 
 
@@ -101,16 +116,12 @@ function DeleteCardSubmit(evt){
     setAddPlacePopupOpen(false)
     setImagePopup(false)
     setDeletePlacePopup(false)
+    setInfoTooltipPopupOpen(false)
   }, [])
 
-  // const closePopupByEsc = useCallback ((evt)=> {
-  // if(evt.key === 'Escape'){
-  //   closeAllPropus()
-  //   document.removeEventListener('keydown' , closePopupByEsc)
-  // }}, [closeAllPropus] )
 
 
-const isOpen = isEditProfilePopupOpen || isAddPlacePopupOpen || isEditAvatarPopupOpen || isImagePopup || isDeletePlacePopup
+const isOpen = isEditProfilePopupOpen || isAddPlacePopupOpen || isEditAvatarPopupOpen || isImagePopup || isDeletePlacePopup || isInfoTooltipPopupOpen
 
 useEffect(() => {
     if (!isOpen) return;
@@ -187,15 +198,77 @@ useEffect(() => {
   }
 
 
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.jwt) {
+      checkTokens(localStorage.jwt)
+        .then(res => {
+          setDataUser(res.data.email)
+          setLoggedIn(true)
+          navigate('/')
+        })
+        .catch(error => console.log(`Ошибкак авторизации повторном входе ${error}`))
+    }
+  }, [navigate])
+
+
+  function handleRegisterUser(password, email) {
+    setLoadingSend(true)
+    regUser(password, email)
+      .then(res => {
+        if (res) {
+          setInfoTooltipPopupOpen(true);
+          setInfoTooltipSuccess(true);
+          navigate('/sign-in');
+        }
+      })
+      .catch(error => {
+        setInfoTooltipPopupOpen(true);
+        setInfoTooltipSuccess(false);
+        console.error(`Ошибка регистрации ${error}`);
+      })
+      .finally(() => setLoadingSend(false));
+  }
+
+
+  function handleLoginUser(password, email) {
+    setLoadingSend(true)
+    loginUser(password, email)
+      .then(res => {
+          localStorage.setItem('jwt', res.token);
+          setLoggedIn(true)
+          navigate('/');
+      })
+      .catch(error => {
+        console.error(`Ошибка авторизации ${error}`);
+      })
+      .finally(() => setLoadingSend(false));
+  }
+
+
+  function handleLogout(){
+
+    localStorage.removeItem('jwt');
+    setLoggedIn(false);
+    navigate('/sign-in');
+  }
+
+
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-
     <div className="page">
 
-      <Header/>
+      <Header
+        dataUser = {dataUser}
+        onLogout = {handleLogout}
+      />
+      
+<Routes>
 
-      <Main
+      <Route path='/' element={<ProtectedRoute
+       
         onEditProfile = {handleEditProfileClick}
         onEditAvatarProfile = {handleEditAvatarClick}
         onAddPlace = {handleAddPlaceClick}
@@ -204,9 +277,38 @@ useEffect(() => {
         cards = {cards}
         isLoadingCard = {isLoadingCard}
         onCardLike = {handleLike}
+        loggedIn={loggedIn}
+        dataUser = {dataUser}
+        
       />
+    }
+      />
+      
+          <Route path="/sign-up" element={
+            <Register onRegister = {handleRegisterUser}
+            isLoadingSend = {isLoadingSend}/>
+          }/>
 
-      <Footer/>
+
+          <Route path="/sign-in" element={
+            <Login onLogin = {handleLoginUser}
+            isLoadingSend = {isLoadingSend}
+        /> } 
+          />
+
+</Routes>
+
+
+
+
+       
+       <InfoToolTip 
+       name ="tooltip"
+        isOpen = {isInfoTooltipPopupOpen}
+        onClose = {closeAllPropus}
+        isSucess={isInfoTooltipSuccess}
+       />
+
 
       <EditProfilePopup
             onUpdateUser = {handleUpdateUser}
@@ -214,42 +316,6 @@ useEffect(() => {
             onClose ={closeAllPropus}
             isLoadingSend = {isLoadingSend}
       />
-
-      {/* <PopupWithForm 
-      name = 'edit-profile'
-      title ='Редактировать профиль'
-      titleButton = 'Сохранить'
-      isOpen = {isEditProfilePopupOpen}
-      onClose ={closeAllPopups}
-      
-      >
-        <div className="popup__input-form">
-          <input
-            type="text"
-            name="name"
-            className="form__text-input form__text-input_type_name popup__input"
-            id="name"
-            placeholder="Имя"
-            maxLength={40}
-            minLength={2}
-            required=""
-          />
-          <span className="popup__invlid-name popup__error-span" />
-        </div>
-        <div className="popup__input-form">
-          <input
-            type="text"
-            name="description"
-            className="form__text-input form__text-input_type_discription popup__input"
-            id="description"
-            placeholder="О себе"
-            maxLength={200}
-            minLength={2}
-            required=""
-          />
-          <span className="popup__error-span popup__invlid-description" />
-        </div>
-      </PopupWithForm> */}
 
 
 
@@ -282,91 +348,6 @@ useEffect(() => {
       />
       <ImagePopup card={selectedCard} isOpen={isImagePopup} onClose ={closeAllPropus}/>
 
-      {/* <div className="popup popup_edit-profile">
-        <div className="popup__container">
-          <button className="popup__close-button decoration" type="button" />
-          <h2 className="popup__title">Редактировать профиль</h2>
-          <form
-            action="#"
-            className="form popup__form form_edit-profile"
-            name="edit-info"
-            noValidate=""
-          >
-            <button
-              type="submit"
-              className="form__save-button decoration popup__save-button"
-            >
-              Сохранить
-            </button>
-          </form>
-        </div>
-      </div>
-      <div className="popup popup_add-card">
-        <div className="popup__container">
-          <button className="popup__close-button decoration" type="button" />
-          <h2 className="popup__title">Новое место</h2>
-          <form
-          action="#" className="form form_add-card popup__form" name="place-add" noValidate=""
-          >
-            
-            <button
-              type="submit"
-              className="form__save-button decoration popup__save-button "
-            >
-              Добавить
-            </button>
-          </form>
-        </div>
-      </div>
-      <div className="popup popup_edit-avatar">
-        <div className="popup__container popup__container_avatar">
-          <button className="popup__close-button decoration" type="button" />
-          <h2 className="popup__title">Обновить аватар</h2>
-          <form
-            action="#"
-            className="form form_edti-avatar popup__form"
-            name="edit-avatar"
-            noValidate=""
-          >
-
-            <button
-              type="submit"
-              className="form__save-button decoration popup__save-button "
-            >
-              Добавить
-            </button>
-          </form>
-        </div>
-      </div> */}
-
-
-      {/* <div className="popup popup_open-card">
-        <figure className="popup__figure-card">
-          <button className="popup__close-button decoration" type="button" />
-          <img className="popup__figure-image" src="#" alt="#" />
-          <figcaption className="popup__figure-caption" />
-        </figure>
-      </div> */}
-
-
-      {/* <div className="popup popup_delete-card">
-        <div className="popup__container popup__container_delete-card">
-          <button className="popup__close-button decoration" type="button" />
-          <h2 className="popup__title popup__title_delete-card">Вы уверены?</h2>
-          <form
-            action="#"
-            className="form form_delete-card popup__form"
-            name="delete-card"
-            noValidate=""
-          >
-            <button
-              type="submit"
-              className="form__save-button decoration popup__save-button popup__delete-save "
-            >
-              Да
-            </button>
-          </form>
-        </div> */}
     </div>
 </CurrentUserContext.Provider>
   );

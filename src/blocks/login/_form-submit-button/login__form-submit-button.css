@@ -1,0 +1,18 @@
+.login__form-submit-button {
+    width: 358px;
+    height: 50px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    background: #FFF;
+    color: #000;
+    text-align: center;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-top: 215px;
+}
+
+.login__form-submit-button:hover {
+    opacity: 0.6;
+}

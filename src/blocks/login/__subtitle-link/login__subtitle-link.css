@@ -1,0 +1,12 @@
+.login__subtitle-link {
+    color: #FFF;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-decoration: none;
+}
+
+.login__subtitle-link:hover {
+    opacity: 0.6;
+}

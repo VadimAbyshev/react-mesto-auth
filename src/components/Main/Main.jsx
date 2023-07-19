@@ -38,6 +38,10 @@ export default function Main({onEditProfile, onEditAvatarProfile, onAddPlace, on
                 )}
     {/* <Spinner/> */}
                 </section>
+                <footer className="footer">
+    <p className="footer__copyright">©2023 Абышев Вадим Олегович</p>
+  </footer>
         </main>
+        
     );
 }

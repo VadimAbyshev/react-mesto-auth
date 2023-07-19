@@ -1,0 +1,11 @@
+.popup__tooltip_message{
+    color: #000;
+text-align: center;
+font-family: Inter;
+font-size: 24px;
+font-style: normal;
+font-weight: 900;
+line-height: normal;
+width: 358px;
+margin: 0 auto 60px;
+}
