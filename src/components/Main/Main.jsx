@@ -2,6 +2,7 @@ import { useContext } from "react";
 import Card from "../Card/Card.jsx";
 import CurrentUserContext from "../../contexts/CurrentUserContext.js";
 import Spinner from "../Spinner/Spinner.jsx";
+import Footer from "../Footer/Footer.jsx";
 
 
 export default function Main({onEditProfile, onEditAvatarProfile, onAddPlace, onCardClick, onBucketClick, cards, isLoadingCard, onCardLike}) {
@@ -32,15 +33,13 @@ export default function Main({onEditProfile, onEditAvatarProfile, onAddPlace, on
                 {isLoadingCard ? <Spinner/> : cards.map(data => 
                 {
                     return (
-                        <div className="element" key={data._id}> <Card card={data} onCardClick={onCardClick} onBucketClick={onBucketClick} onCardLike={onCardLike}/> </div>
+                        <Card   key={data._id} card={data} onCardClick={onCardClick} onBucketClick={onBucketClick} onCardLike={onCardLike}/>
                     )
                 }
                 )}
     {/* <Spinner/> */}
                 </section>
-                <footer className="footer">
-    <p className="footer__copyright">©2023 Абышев Вадим Олегович</p>
-  </footer>
+            <Footer/>
         </main>
         
     );

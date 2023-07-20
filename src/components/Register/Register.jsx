@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import useFormValidation from "../../utils/useFormValidation";
 
 
 export default function Register({onRegister, name, isLoadingSend}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { value } = useFormValidation()
 
   function handleEmailChange(evt) {
     setEmail(evt.target.value);
@@ -19,7 +21,6 @@ export default function Register({onRegister, name, isLoadingSend}) {
   }
 
   return (
-    <>      
       <section className="login page_login">
         <h2 className="login__title">Регистрация</h2>
         <form className="login__form form" 
@@ -37,6 +38,7 @@ export default function Register({onRegister, name, isLoadingSend}) {
             type="email"
             required
             onChange={handleEmailChange}
+            value = {value.email}
           ></input>
 
 
@@ -47,6 +49,8 @@ export default function Register({onRegister, name, isLoadingSend}) {
             type="password"
             required
             onChange={handlePasswordChange}
+            value = {value.password}
+
           ></input>
           <button className="login__form-submit-button decoration" type="submit">
             
@@ -57,7 +61,6 @@ export default function Register({onRegister, name, isLoadingSend}) {
         </form>
         <p className="login__subtitle">Уже зарегистрированы? <Link to="/sign-in" className='login__subtitle-link decoration'> Войти</Link></p>
       </section>
-    </>
   );
 }
 

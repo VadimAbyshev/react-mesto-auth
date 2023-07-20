@@ -1,5 +1,5 @@
 import Header from "./Header/Header.jsx";
-// import Main from "./Main/Main.jsx";
+import Main from "./Main/Main.jsx";
 // import Footer from "./Footer/Footer.jsx";
 import PopupWithForm from "./PopupWithForm/PopupWithForm.jsx";
 import ImagePopup from "./ImagePopup/ImagePopup.jsx"
@@ -13,17 +13,17 @@ import Register from "./Register/Register.jsx";
 import InfoToolTip from "./InfoTooltip/InfoTooltip.jsx";
 import Login from "./Login/Login.jsx";
 
-import {regUser, loginUser, checkTokens} from "../utils/Auth.js"
-import {  Route, Routes, useNavigate } from 'react-router-dom'
+import { regUser, loginUser, checkTokens } from "../utils/Auth.js"
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute.jsx";
 
 
-function App() { 
+function App() {
 
   const navigate = useNavigate()
 
 
-//state Popup
+  //state Popup
 
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false)
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false)
@@ -35,82 +35,81 @@ function App() {
 
   const [isInfoTooltipPopupOpen, setInfoTooltipPopupOpen] = useState(false)
   const [isInfoTooltipSuccess, setInfoTooltipSuccess] = useState(false)
- 
- //state Context
+
+  //state Context
   const [currentUser, setCurrentUser] = useState({})
 
- 
- //state Card
- const [cards, setCards] = useState([])
-  const[isLoadingCard, setLoadingCard] = useState(true)
-  const[deleteCardId, setDeleteCardId] = useState('')
 
-const[dataUser, setDataUser] = useState('')
+  //state Card
+  const [cards, setCards] = useState([])
+  const [isLoadingCard, setLoadingCard] = useState(true)
+  const [deleteCardId, setDeleteCardId] = useState('')
+
+  const [dataUser, setDataUser] = useState('')
 
 
 
- useEffect(() =>{
-  setLoadingCard(true)
-  Promise.all([api.getInfo(), api.getCards()])
+  useEffect(() => {
+    setLoadingCard(true)
+    Promise.all([api.getInfo(), api.getCards()])
 
-  .then(([dataUser, dataCard])  =>{
-    
-     setCurrentUser(dataUser) 
-      dataCard.forEach(
+      .then(([dataUser, dataCard]) => {
+
+        setCurrentUser(dataUser)
+        dataCard.forEach(
           data => data.myid = dataUser._id
-     
-      );
-      setCards(dataCard)
-      setLoadingCard(false)
-  })
-  .catch((error => console.error(`Ошибка ответа от сервера ${error}`)))
-},[])
 
-
-const handleLike = useCallback((cards) => {
-  const isLike = cards.likes.some(item => currentUser._id === item._id)
-
-  if(isLike){
-  
-    api.delLike(cards._id)
-    .then(res => {
-        setCards(state => state.map((c) => c._id === cards._id ? res : c)) 
-
-    })
-
-    .catch((err) => console.error(`Ошибка снятия лайка ${err}`))
-} 
-  else {
-    api.addLike(cards._id)
-      .then(res => {
-        setCards(state => state.map((c) => c._id === cards._id ? res : c)) 
+        );
+        setCards(dataCard)
+        setLoadingCard(false)
       })
-      .catch((err) => console.error(`Ошибка установки лайка ${err}`))
+      .catch((error => console.error(`Ошибка ответа от сервера ${error}`)))
+  }, [])
 
 
+  const handleLike = useCallback((cards) => {
+    const isLike = cards.likes.some(item => currentUser._id === item._id)
+
+    if (isLike) {
+
+      api.delLike(cards._id)
+        .then(res => {
+          setCards(state => state.map((c) => c._id === cards._id ? res : c))
+
+        })
+
+        .catch((err) => console.error(`Ошибка снятия лайка ${err}`))
+    }
+    else {
+      api.addLike(cards._id)
+        .then(res => {
+          setCards(state => state.map((c) => c._id === cards._id ? res : c))
+        })
+        .catch((err) => console.error(`Ошибка установки лайка ${err}`))
+
+
+    }
+  }, [currentUser._id])
+
+
+
+
+  function deleteCardSubmit(evt) {
+    evt.preventDefault()
+    setLoadingSend(true)
+    api.delCard(deleteCardId)
+      .then(res => {
+        setCards(cards.filter(item => {
+          return item._id !== deleteCardId
+        }))
+        closeAllPropus()
+        setLoadingSend(false)
+      })
+      .catch((error => console.error(`Ошибка удаления карточки ${error}`)))
   }
-}, [currentUser._id])
 
 
-  
-
-
-function DeleteCardSubmit(evt){
-  evt.preventDefault()
-  setLoadingSend(true)
-  api.delCard(deleteCardId)
-    .then(res =>{
-      setCards(cards.filter(item => {
-        return item._id !== deleteCardId
-      }))
-      closeAllPropus()
-      setLoadingSend(false)
-    })
-    .catch((error => console.error(`Ошибка удаления карточки ${error}`)))
-}
-
-
-  const closeAllPropus = useCallback (() =>{
+  const closeAllPropus = useCallback(() => {
     setEditAvatarPopupOpen(false)
     setEditProfilePopupOpen(false)
     setAddPlacePopupOpen(false)
@@ -121,11 +120,11 @@ function DeleteCardSubmit(evt){
 
 
 
-const isOpen = isEditProfilePopupOpen || isAddPlacePopupOpen || isEditAvatarPopupOpen || isImagePopup || isDeletePlacePopup || isInfoTooltipPopupOpen
+  const isOpen = isEditProfilePopupOpen || isAddPlacePopupOpen || isEditAvatarPopupOpen || isImagePopup || isDeletePlacePopup || isInfoTooltipPopupOpen
 
-useEffect(() => {
+  useEffect(() => {
     if (!isOpen) return;
-    
+
     function handleESC(e) {
       if (e.key === "Escape") {
         closeAllPropus()
@@ -138,63 +137,63 @@ useEffect(() => {
   }, [isOpen]);
 
 
-  function handleEditAvatarClick(){
+  function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true)
   }
 
-  function handleEditProfileClick(){
+  function handleEditProfileClick() {
     setEditProfilePopupOpen(true)
   }
 
-  function handleAddPlaceClick(){
+  function handleAddPlaceClick() {
     setAddPlacePopupOpen(true)
   }
 
-  function handleDeletePlaceClick(cardId){
+  function handleDeletePlaceClick(cardId) {
     setDeleteCardId(cardId)
     setDeletePlacePopup(true)
   }
 
-  function handleCardClick(card){
+  function handleCardClick(card) {
     setSelectedCard(card)
     setImagePopup(true)
   }
 
-  function handleUpdateUser(dataUser, reset){
+  function handleUpdateUser(dataUser, reset) {
     setLoadingSend(true)
     api.setUserInfo(dataUser)
-    .then(res => {
-      setCurrentUser(res)
-      closeAllPropus()
-      reset()
-      setLoadingSend(false)
-    })
-    .catch((error => console.error(`Ошибка редактирования профиля ${error}`)))
+      .then(res => {
+        setCurrentUser(res)
+        closeAllPropus()
+        reset()
+        setLoadingSend(false)
+      })
+      .catch((error => console.error(`Ошибка редактирования профиля ${error}`)))
   }
 
-  function handleUpdateAvatar(dataUser, reset){
+  function handleUpdateAvatar(dataUser, reset) {
     setLoadingSend(true)
     api.setNewAvatar(dataUser)
-    .then(res => {
-      setCurrentUser(res)
-      closeAllPropus()
-      reset()
-      setLoadingSend(false)
-    })
-    .catch((error => console.error(`Ошибка редактирования аватара ${error}`)))
+      .then(res => {
+        setCurrentUser(res)
+        closeAllPropus()
+        reset()
+        setLoadingSend(false)
+      })
+      .catch((error => console.error(`Ошибка редактирования аватара ${error}`)))
   }
 
 
-  function handleAddPlaceSubmit(dataCard, reset){
+  function handleAddPlaceSubmit(dataCard, reset) {
     setLoadingSend(true)
     api.addCard(dataCard)
-    .then(res => {
-      setCards([res, ...cards]);
-      closeAllPropus()
-      reset()
-      setLoadingSend(false)
-    })
-    .catch((error => console.error(`Ошибка добавления карточки ${error}`)))
+      .then(res => {
+        setCards([res, ...cards]);
+        closeAllPropus()
+        reset()
+        setLoadingSend(false)
+      })
+      .catch((error => console.error(`Ошибка добавления карточки ${error}`)))
   }
 
 
@@ -236,21 +235,21 @@ useEffect(() => {
     setLoadingSend(true)
     loginUser(password, email)
       .then(res => {
-          localStorage.setItem('jwt', res.token);
-          setLoggedIn(true)
-          navigate('/');
+        localStorage.setItem('jwt', res.token);
+        setLoggedIn(true)
+        navigate('/');
       })
       .catch(error => {
         setInfoTooltipPopupOpen(true);
         setInfoTooltipSuccess(false);
         console.error(`Ошибка авторизации ${error}`);
-        
+
       })
       .finally(() => setLoadingSend(false));
   }
 
 
-  function handleLogout(){
+  function handleLogout() {
 
     localStorage.removeItem('jwt');
     setLoggedIn(false);
@@ -261,98 +260,98 @@ useEffect(() => {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-    <div className="page">
+      <div className="page">
 
-      <Header
-        dataUser = {dataUser}
-        onLogout = {handleLogout}
-      />
-      
-<Routes>
+        <Header
+          dataUser={dataUser}
+          onLogout={handleLogout}
+        />
 
-      <Route path='/' element={<ProtectedRoute
-       
-        onEditProfile = {handleEditProfileClick}
-        onEditAvatarProfile = {handleEditAvatarClick}
-        onAddPlace = {handleAddPlaceClick}
-        onCardClick = {handleCardClick}
-        onBucketClick = {handleDeletePlaceClick}
-        cards = {cards}
-        isLoadingCard = {isLoadingCard}
-        onCardLike = {handleLike}
-        loggedIn={loggedIn}
-        dataUser = {dataUser}
-        
-      />
-    }
-      />
-      
+        <Routes>
+
+          <Route path='/' element={<ProtectedRoute
+            component={Main}
+            onEditProfile={handleEditProfileClick}
+            onEditAvatarProfile={handleEditAvatarClick}
+            onAddPlace={handleAddPlaceClick}
+            onCardClick={handleCardClick}
+            onBucketClick={handleDeletePlaceClick}
+            cards={cards}
+            isLoadingCard={isLoadingCard}
+            onCardLike={handleLike}
+            loggedIn={loggedIn}
+            dataUser={dataUser}
+
+          />
+          }
+          />
+
           <Route path="/sign-up" element={
-            <Register onRegister = {handleRegisterUser}
-            isLoadingSend = {isLoadingSend}/>
-          }/>
+            <Register onRegister={handleRegisterUser}
+              isLoadingSend={isLoadingSend} />
+          } />
 
 
           <Route path="/sign-in" element={
-            <Login onLogin = {handleLoginUser}
-            isLoadingSend = {isLoadingSend}
-        /> } 
+            <Login onLogin={handleLoginUser}
+              isLoadingSend={isLoadingSend}
+            />}
           />
 
-</Routes>
+        </Routes>
 
 
 
 
-       
-       <InfoToolTip 
-       name ="tooltip"
-        isOpen = {isInfoTooltipPopupOpen}
-        onClose = {closeAllPropus}
-        isSucess={isInfoTooltipSuccess}
-       />
+
+        <InfoToolTip
+          name="tooltip"
+          isOpen={isInfoTooltipPopupOpen}
+          onClose={closeAllPropus}
+          isSucess={isInfoTooltipSuccess}
+        />
 
 
-      <EditProfilePopup
-            onUpdateUser = {handleUpdateUser}
-            isOpen = {isEditProfilePopupOpen}
-            onClose ={closeAllPropus}
-            isLoadingSend = {isLoadingSend}
-      />
-
-
-
-         <AddPlacePopup
-              onAddPlace = {handleAddPlaceSubmit}
-              isOpen = {isAddPlacePopupOpen}
-              onClose ={closeAllPropus}
-              isLoadingSend = {isLoadingSend}
-         />
-
-         <EditAvatarPopup 
-      onUpdateAvatar = {handleUpdateAvatar}
-      isOpen={isEditAvatarPopupOpen}
-      onClose ={closeAllPropus}
-      isLoadingSend = {isLoadingSend}
-      />
+        <EditProfilePopup
+          onUpdateUser={handleUpdateUser}
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPropus}
+          isLoadingSend={isLoadingSend}
+        />
 
 
 
+        <AddPlacePopup
+          onAddPlace={handleAddPlaceSubmit}
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPropus}
+          isLoadingSend={isLoadingSend}
+        />
 
-         <PopupWithForm 
-      name =  'delete'
-      title ='Вы уверены?'
-      titleButton = 'Да'
-      isOpen={isDeletePlacePopup}
-      onClose={closeAllPropus}
-      onSubmit = {DeleteCardSubmit}
-      isLoadingSend = {isLoadingSend}
-      
-      />
-      <ImagePopup card={selectedCard} isOpen={isImagePopup} onClose ={closeAllPropus}/>
+        <EditAvatarPopup
+          onUpdateAvatar={handleUpdateAvatar}
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPropus}
+          isLoadingSend={isLoadingSend}
+        />
 
-    </div>
-</CurrentUserContext.Provider>
+
+
+
+        <PopupWithForm
+          name='delete'
+          title='Вы уверены?'
+          titleButton='Да'
+          isOpen={isDeletePlacePopup}
+          onClose={closeAllPropus}
+          onSubmit={deleteCardSubmit}
+          isLoadingSend={isLoadingSend}
+
+        />
+        <ImagePopup card={selectedCard} isOpen={isImagePopup} onClose={closeAllPropus} />
+
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 
